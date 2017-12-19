@@ -2,6 +2,7 @@ export declare class _xlsx {
     private static _alphabet;
     private static _indexedColors;
     private static _numFmts;
+    private static _tableColumnFunctions;
     private static _xmlDescription;
     private static _workbookNS;
     private static _relationshipsNS;
@@ -9,6 +10,7 @@ export declare class _xlsx {
     private static _defaultFontSize;
     private static _macroEnabled;
     private static _sharedStrings;
+    static readonly _defaultColorThemes: string[];
     private static _colorThemes;
     private static _styles;
     private static _sharedFormulas;
@@ -19,6 +21,9 @@ export declare class _xlsx {
     private static _props;
     private static _xlRels;
     private static _worksheets;
+    private static _tableStyles;
+    private static _dxfs;
+    private static _tables;
     static load(base64: string): any;
     static loadAsync(base64: string): _Promise;
     static save(workbook: any): any;
@@ -32,6 +37,13 @@ export declare class _xlsx {
     private static _getStyle(styleSheet);
     private static _getEdgeBorder(strBorder, edge);
     private static _getSheet(sheet, index, result);
+    private static _getTable(table);
+    private static _getTableColumn(column);
+    private static _getSheetRelatedTable(rels, rId, tables);
+    private static _getTableStyles(styleDefs, dxfs);
+    private static _getTableStyleElement(dxf);
+    private static _getTableStyleByName(styleName);
+    private static _isBuiltInStyleName(styleName);
     private static _generateRelsDoc();
     private static _generateThemeDoc();
     private static _generateClrScheme();
@@ -46,9 +58,9 @@ export declare class _xlsx {
     private static _generateCell(rowIndex, colIndex, styleIndex, type, val, formula);
     private static _generateMergeSetting(merges);
     private static _generateStyleDoc();
-    private static _generateBorderStyle(borders);
+    private static _generateBorderStyle(borders, isTable?);
     private static _generateFontStyle(fontStyle, needScheme?);
-    private static _generateFillStyle(patternType, fillColor);
+    private static _generateFillStyle(patternType, fillColor, isTableStyle?);
     private static _generateCellXfs(numFmtId, borderId, fontId, fillId, style);
     private static _generateContentTypesDoc();
     private static _generateAppDoc(file);
@@ -56,6 +68,14 @@ export declare class _xlsx {
     private static _generateWorkbook(file);
     private static _generateWorkSheet(sheetIndex, file, xlWorksheets);
     private static _generateSharedStringsDoc();
+    private static _generateTable(tableIndex, table, xlTables);
+    private static _generateTableFilterSetting(ref, showTotalRow, columns);
+    private static _generateSheetRel(tables, tableNames);
+    private static _getDxfs();
+    private static _generateDxfs();
+    private static _generateTableStyles();
+    private static _isEmptyStyleEle(styleEle);
+    private static _getTableFileName(tables, tableName);
     private static _getColor(s, isFillColor);
     private static _getThemeColor(theme, tint);
     private static _parseColor(color);
@@ -64,6 +84,7 @@ export declare class _xlsx {
     private static _getSharedFormula(si, cellRef);
     private static _convertDate(input);
     private static _parseBorder(border, needDefaultBorder);
+    private static _applyDefaultBorder(style);
     private static _resolveStyleInheritance(style);
     private static _parsePixelToCharWidth(pixels);
     private static _parseCharWidthToPixel(charWidth);
@@ -107,12 +128,17 @@ export declare class Workbook implements IWorkbook {
     private _sheets;
     private _styles;
     private _definedNames;
+    private _tables;
+    private _tableStyles;
+    private _colorThemes;
     private static _alphabet;
     private static _formatMap;
     constructor();
     readonly sheets: WorkSheet[];
     readonly styles: WorkbookStyle[];
     readonly definedNames: DefinedName[];
+    readonly tables: WorkbookTable[];
+    readonly colorThemes: string[];
     reservedContent: any;
     save(fileName?: string): string;
     saveAsync(fileName?: string, onSaved?: (base64?: string) => any, onError?: (reason?: any) => any): void;
@@ -147,9 +173,13 @@ export declare class Workbook implements IWorkbook {
     private _serializeWorkSheets();
     private _serializeWorkbookStyles();
     private _serializeDefinedNames();
+    private _serializeTables();
+    private _serializeTableStyles();
     private _deserializeWorkSheets(workSheets);
     private _deserializeWorkbookStyles(workbookStyles);
     private _deserializeDefinedNames(definedNames);
+    private _deserializeTables(tables);
+    private _deserializeTableStyles(tableStyles);
 }
 export declare class WorkSheet implements IWorkSheet {
     name: string;
@@ -159,9 +189,11 @@ export declare class WorkSheet implements IWorkSheet {
     style: WorkbookStyle;
     private _columns;
     private _rows;
+    private _tableNames;
     constructor();
     readonly columns: WorkbookColumn[];
     readonly rows: WorkbookRow[];
+    readonly tableNames: string[];
     _serialize(): IWorkSheet;
     _deserialize(workSheetOM: IWorkSheet): void;
     _addWorkbookColumn(column: WorkbookColumn, columnIndex?: number): void;
@@ -238,14 +270,14 @@ export declare class WorkbookFont implements IWorkbookFont {
     bold: boolean;
     italic: boolean;
     underline: boolean;
-    color: string;
+    color: any;
     constructor();
     _serialize(): IWorkbookFont;
     _deserialize(workbookFontOM: IWorkbookFont): void;
     private _checkEmptyWorkbookFont();
 }
 export declare class WorkbookFill implements IWorkbookFill {
-    color: string;
+    color: any;
     constructor();
     _serialize(): IWorkbookFill;
     _deserialize(workbookFillOM: IWorkbookFill): void;
@@ -262,7 +294,7 @@ export declare class WorkbookBorder implements IWorkbookBorder {
     private _checkEmptyWorkbookBorder();
 }
 export declare class WorkbookBorderSetting implements IWorkbookBorderSetting {
-    color: string;
+    color: any;
     style: BorderStyle;
     constructor();
     _serialize(): IWorkbookBorderSetting;
@@ -275,6 +307,71 @@ export declare class DefinedName implements IDefinedName {
     constructor();
     _serialize(): IDefinedName;
     _deserialize(definedNameOM: IDefinedName): void;
+}
+export declare class WorkbookTable implements IWorkbookTable {
+    name: string;
+    ref: string;
+    showHeaderRow: boolean;
+    showTotalRow: boolean;
+    showBandedColumns: boolean;
+    style: WorkbookTableStyle;
+    showBandedRows: boolean;
+    showFirstColumn: boolean;
+    showLastColumn: boolean;
+    private _columns;
+    readonly columns: WorkbookTableColumn[];
+    constructor();
+    _serialize(): IWorkbookTable;
+    _deserialize(workbookTableOM: IWorkbookTable): void;
+    private _serializeTableColumns();
+    private _deserializeTableColumns(tableColumnOMs);
+}
+export declare class WorkbookTableColumn implements IWorkbookTableColumn {
+    name: string;
+    totalRowLabel: string;
+    totalRowFunction: string;
+    showFilterButton: boolean;
+    constructor();
+    _serialize(): IWorkbookTableColumn;
+    _deserialize(workbookTableColumnOM: IWorkbookTableColumn): void;
+}
+export declare class WorkbookTableStyle implements IWorkbookTableStyle {
+    name: string;
+    wholeTableStyle: WorkbookTableCommonStyle;
+    firstBandedColumnStyle: WorkbookTableBandedStyle;
+    secondBandedColumnStyle: WorkbookTableBandedStyle;
+    firstBandedRowStyle: WorkbookTableBandedStyle;
+    secondBandedRowStyle: WorkbookTableBandedStyle;
+    firstColumnStyle: WorkbookTableCommonStyle;
+    lastColumnStyle: WorkbookTableCommonStyle;
+    headerRowStyle: WorkbookTableCommonStyle;
+    totalRowStyle: WorkbookTableCommonStyle;
+    firstHeaderCellStyle: WorkbookTableCommonStyle;
+    lastHeaderCellStyle: WorkbookTableCommonStyle;
+    firstTotalCellStyle: WorkbookTableCommonStyle;
+    lastTotalCellStyle: WorkbookTableCommonStyle;
+    constructor();
+    _serialize(): IWorkbookTableStyle;
+    _deserialize(workbookTableStyleOM: IWorkbookTableStyle): void;
+    private _checkEmptyWorkbookTableStyle();
+}
+export declare class WorkbookTableCommonStyle extends WorkbookStyle implements IWorkbookTableCommonStyle {
+    borders: WorkbookTableBorder;
+    constructor();
+    _deserialize(workbookTableCommonStyleOM: IWorkbookTableCommonStyle): void;
+}
+export declare class WorkbookTableBandedStyle extends WorkbookTableCommonStyle implements IWorkbookTableBandedStyle {
+    size: number;
+    constructor();
+    _serialize(): IWorkbookTableBandedStyle;
+    _deserialize(workbookTableBandedStyleOM: IWorkbookTableBandedStyle): void;
+}
+export declare class WorkbookTableBorder extends WorkbookBorder implements IWorkbookTableBorder {
+    vertical: WorkbookBorderSetting;
+    horizontal: WorkbookBorderSetting;
+    constructor();
+    _serialize(): IWorkbookTableBorder;
+    _deserialize(workbookBorderOM: IWorkbookTableBorder): void;
 }
 export interface IXlsxFileContent {
     base64: string;
@@ -289,6 +386,7 @@ export interface IWorkSheet {
     summaryBelow?: boolean;
     visible?: boolean;
     style?: IWorkbookStyle;
+    tableNames?: string[];
 }
 export interface IWorkbookColumn {
     width?: any;
@@ -328,6 +426,8 @@ export interface IWorkbook {
     styles?: IWorkbookStyle[];
     reservedContent?: any;
     definedNames?: IDefinedName[];
+    tables?: IWorkbookTable[];
+    colorThemes?: string[];
 }
 export interface IWorkbookStyle {
     format?: string;
@@ -346,7 +446,7 @@ export interface IWorkbookFont {
     bold?: boolean;
     italic?: boolean;
     underline?: boolean;
-    color?: string;
+    color?: any;
 }
 export interface IWorkbookBorder {
     top?: IWorkbookBorderSetting;
@@ -356,11 +456,11 @@ export interface IWorkbookBorder {
     diagonal?: IWorkbookBorderSetting;
 }
 export interface IWorkbookBorderSetting {
-    color?: string;
+    color?: any;
     style?: BorderStyle;
 }
 export interface IWorkbookFill {
-    color?: string;
+    color?: any;
 }
 export interface ITableIndex {
     row: number;
@@ -378,6 +478,50 @@ export interface IDefinedName {
     name: string;
     value: any;
     sheetName?: string;
+}
+export interface IWorkbookTable {
+    name: string;
+    ref: string;
+    showHeaderRow: boolean;
+    showTotalRow: boolean;
+    showBandedColumns: boolean;
+    style: IWorkbookTableStyle;
+    showBandedRows: boolean;
+    showFirstColumn: boolean;
+    showLastColumn: boolean;
+    columns: IWorkbookTableColumn[];
+}
+export interface IWorkbookTableColumn {
+    name: string;
+    totalRowLabel?: string;
+    totalRowFunction?: string;
+    showFilterButton?: boolean;
+}
+export interface IWorkbookTableStyle {
+    name: string;
+    wholeTableStyle?: IWorkbookTableCommonStyle;
+    firstBandedColumnStyle?: IWorkbookTableBandedStyle;
+    secondBandedColumnStyle?: IWorkbookTableBandedStyle;
+    firstBandedRowStyle?: IWorkbookTableBandedStyle;
+    secondBandedRowStyle?: IWorkbookTableBandedStyle;
+    firstColumnStyle?: IWorkbookTableCommonStyle;
+    lastColumnStyle?: IWorkbookTableCommonStyle;
+    headerRowStyle?: IWorkbookTableCommonStyle;
+    totalRowStyle?: IWorkbookTableCommonStyle;
+    firstHeaderCellStyle?: IWorkbookTableCommonStyle;
+    lastHeaderCellStyle?: IWorkbookTableCommonStyle;
+    firstTotalCellStyle?: IWorkbookTableCommonStyle;
+    lastTotalCellStyle?: IWorkbookTableCommonStyle;
+}
+export interface IWorkbookTableCommonStyle extends IWorkbookStyle {
+    borders?: IWorkbookTableBorder;
+}
+export interface IWorkbookTableBandedStyle extends IWorkbookTableCommonStyle {
+    size?: number;
+}
+export interface IWorkbookTableBorder extends IWorkbookBorder {
+    vertical?: IWorkbookBorderSetting;
+    horizontal?: IWorkbookBorderSetting;
 }
 export declare enum HAlign {
     General = 0,

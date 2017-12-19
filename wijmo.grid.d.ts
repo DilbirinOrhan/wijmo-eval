@@ -37,6 +37,7 @@ export declare class FlexGrid extends wjcCore.Control {
     private _gpCFtr;
     private _maxOffsetY;
     private _heightBrowser;
+    private _tabIndex;
     _szClient: wjcCore.Size;
     _offsetY: number;
     _lastCount: number;
@@ -55,6 +56,7 @@ export declare class FlexGrid extends wjcCore.Control {
     private _readOnly;
     private _indent;
     private _autoSizeMode;
+    private _quickSize;
     private _hdrVis;
     private _alSorting;
     private _alAddNew;
@@ -113,6 +115,8 @@ export declare class FlexGrid extends wjcCore.Control {
     allowResizing: AllowResizing;
     deferResizing: boolean;
     autoSizeMode: AutoSizeMode;
+    quickAutoSize: boolean;
+    _getQuickAutoSize(): boolean;
     allowSorting: boolean;
     allowAddNew: boolean;
     newRowAtTop: boolean;
@@ -283,30 +287,32 @@ export declare class FlexGrid extends wjcCore.Control {
     _getShowErrors(): boolean;
     _getHasValidation(): boolean;
     _getError(p: GridPanel, r: number, c: number): string;
-    _setAria(name: string, value: any): void;
-    _setFocus(force: boolean): void;
+    private _setAria(name, value);
+    private _setFocus(force);
     _setFocusNoScroll(cell: HTMLElement): void;
-    _getDefaultRowHeight(): number;
-    _getCollectionView(value: any): wjcCore.ICollectionView;
-    _getDesiredWidth(p: GridPanel, r: number, c: number, e: HTMLElement): number;
-    _getDesiredHeight(p: GridPanel, r: number, c: number, e: HTMLElement): number;
+    private _getDefaultRowHeight();
+    protected _getCollectionView(value: any): wjcCore.ICollectionView;
+    private _getCanvasContext();
+    private _getWidestRow(p, rowRange, col, ctx);
+    private _getDesiredWidth(p, r, c, e);
+    private _getDesiredHeight(p, r, c, e);
     _getSortRowIndex(): number;
     _mappedColumns: any;
     private _sortConverter(sd, item, value, init);
-    _bindGrid(full: boolean): void;
+    protected _bindGrid(full: boolean): void;
     _cvCollectionChanged(sender: any, e: wjcCore.NotifyCollectionChangedEventArgs): void;
     private _cvCurrentChanged(sender, e);
     private _getRowIndex(index);
     _getCvIndex(index: number): number;
     private _findRow(data);
     private _updateLayout();
-    _updateStickyHeaders(): void;
+    private _updateStickyHeaders();
     private _updateScrollHandler();
     _clipToScreen(): boolean;
     private _scroll(e);
     private _updateScrollPosition();
     private _updateContent(recycle, state?);
-    _clearCells(): void;
+    private _clearCells();
     _useFrozenDiv(): boolean;
     private _updateFrozenCells(state);
     private _getMarqueeRect(rng);
@@ -392,6 +398,7 @@ export declare class GridPanel {
     _renderRowHdrCell(row: HTMLElement, r: number, value: any): number;
     _renderRow(r: number, rng: CellRange, state: boolean, ctr: number): number;
     _renderCell(row: HTMLElement, r: number, c: number, rng: CellRange, state: boolean, ctr: number): number;
+    _removeExtraCells(row: HTMLElement, count: number): void;
     _getViewRange(): CellRange;
     _getFrozenPos(): wjcCore.Point;
 }
@@ -449,6 +456,7 @@ export declare enum RowColFlags {
     ReadOnly = 512,
     HtmlContent = 1024,
     WordWrap = 2048,
+    HasTemplate = 4096,
     RowDefault = 3,
     ColumnDefault = 23,
 }
@@ -498,6 +506,7 @@ export declare class Column extends RowCol {
     private _required;
     private _showDropDown;
     private _ddCssClass;
+    private _quickSize;
     _binding: wjcCore.Binding;
     _bindingSort: wjcCore.Binding;
     _szStar: string;
@@ -516,6 +525,8 @@ export declare class Column extends RowCol {
     width: any;
     minWidth: number;
     maxWidth: number;
+    quickAutoSize: boolean;
+    private _getQuickAutoSize();
     readonly renderWidth: number;
     align: string;
     getAlignment(): string;
@@ -740,6 +751,7 @@ export declare class _MouseHandler {
     static _SZ_MIN: number;
     constructor(g: FlexGrid);
     resetMouseState(): void;
+    private _enableTouchResizing();
     private _mousedown(e);
     private _mousemove(e);
     private _mouseup(e);

@@ -1,6 +1,6 @@
-﻿/*
+/*
     *
-    * Wijmo Library 5.20172.359
+    * Wijmo Library 5.20173.380
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -10,4 +10,4 @@
     * wijmo.com/products/wijmo-5/license/
     *
     */
-"use strict";function _getProps(n,t){for(var e,u,o,f=window,s=n.split('.'),r=0;r<s.length&&f!=null;r++)f=f[s[r]];if(!f)return null;for(e=['control','initialized'],u=f.prototype;u!=Object.prototype;u=Object.getPrototypeOf(u))for(o=Object.getOwnPropertyNames(u),r=0;r<o.length;r++){var i=o[r],c=Object.getOwnPropertyDescriptor(u,i),h=i.match(/^on[A-Z]/);(c.set||h)&&(h&&(i=i[2].toLowerCase()+i.substr(3)),e.indexOf(i)<0&&!i.match(/disabled|required/)&&e.push(i))}return t&&Array.prototype.push.apply(e,t),e}function _initialize(n,t){function u(n){this.ctl[this.prop]=n}var i=[];for(var r in n.$options.propsData)i.push(r);return i.sort(),i.forEach(function(i){!(i in t)||t[i]instanceof wjcCore.Event||wjcCore.isUndefined(n[i])||(t[i]=n[i],n.$watch(i,u.bind({ctl:t,prop:i})))}),i.forEach(function(i){if(t[i]instanceof wjcCore.Event){var r=t[i];wjcCore.isFunction(n[i])&&r.addHandler(n[i],t)}}),n.control&&n.$parent&&(n.$parent[n.control]=t),wjcCore.isFunction(n.initialized)&&n.initialized(t),t}Object.defineProperty(exports,"__esModule",{value:!0});var wjcCore=require("wijmo/wijmo"),wjcSelf=require("wijmo/wijmo.vue2.base");window.wijmo=window.wijmo||{};window.wijmo.vue2=window.wijmo.vue2||{};window.wijmo.vue2.base=wjcSelf;exports._getProps=_getProps;exports._initialize=_initialize
+"use strict";function _getProps(e,o){for(var i=window,t=e.split("."),r=0;r<t.length&&null!=i;r++)i=i[t[r]];if(!i)return null;for(var n=["control","initialized"],a=i.prototype;a!=Object.prototype;a=Object.getPrototypeOf(a))for(var c=Object.getOwnPropertyNames(a),r=0;r<c.length;r++){var w=c[r],p=Object.getOwnPropertyDescriptor(a,w),s=w.match(/^on[A-Z]/);(p.set||s)&&(s&&(w=w[2].toLowerCase()+w.substr(3)),n.indexOf(w)<0&&!w.match(/disabled|required/)&&n.push(w))}return o&&Array.prototype.push.apply(n,o),n}function _initialize(e,o){function i(e){this.ctl[this.prop]=e}var t=[];for(var r in e.$options.propsData)t.push(r);return t.sort(),t.forEach(function(t){!(t in o)||o[t]instanceof wjcCore.Event||wjcCore.isUndefined(e[t])||(o[t]=e[t],e.$watch(t,i.bind({ctl:o,prop:t})))}),t.forEach(function(i){if(o[i]instanceof wjcCore.Event){var t=o[i];wjcCore.isFunction(e[i])&&t.addHandler(e[i],o)}}),e.control&&e.$parent&&(e.$parent[e.control]=o),wjcCore.isFunction(e.initialized)&&e.initialized(o),o}Object.defineProperty(exports,"__esModule",{value:!0});var wjcCore=require("wijmo/wijmo"),wjcSelf=require("wijmo/wijmo.vue2.base");window.wijmo=window.wijmo||{},window.wijmo.vue2=window.wijmo.vue2||{},window.wijmo.vue2.base=wjcSelf,exports._getProps=_getProps,exports._initialize=_initialize;

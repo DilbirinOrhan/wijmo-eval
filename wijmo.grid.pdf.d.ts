@@ -66,5 +66,5 @@ export declare class FlexGridPdfConverter {
     private static _draw(flex, doc, point, width, height, settings);
     private static _getScaleFactor(gr, scaleMode, rect);
     private static _getPages(gr, ranges, rect, settings, isPositionedMode, scaleFactor);
-    private static _getGridRenderer(flex, range, repeatMergedValues, borderWidth, styles, lastPage);
+    private static _getGridRenderer(flex, settings, range, borderWidth, lastPage);
 }

@@ -1369,7 +1369,8 @@ export declare class _SideTabs extends wjcCore.Control {
     collapse(): void;
     expand(): void;
     toggle(): void;
-    _getNewTabPageId(): string;
+    private _clearActiveStyles();
+    private _getNewTabPageId();
 }
 export interface _TabPageVisibilityChangedEventArgs {
     tabPage: _TabPage;

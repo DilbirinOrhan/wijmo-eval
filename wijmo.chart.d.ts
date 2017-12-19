@@ -81,7 +81,12 @@ export declare class FlexChartBase extends wjcCore.Control implements _IPalette 
     _getLightColor(color: string): string;
     _bindChart(): void;
     _clearCachedValues(): void;
-    _render(engine: IRenderEngine): void;
+    _render(engine: IRenderEngine, applyElement?: boolean): void;
+    _renderHeader(engine: IRenderEngine, rect: wjcCore.Rect): void;
+    _renderFooter(engine: IRenderEngine, rect: wjcCore.Rect): void;
+    _renderLegends(engine: IRenderEngine, rect: wjcCore.Rect): void;
+    _prepareRender(): void;
+    _renderChart(engine: IRenderEngine, rect: wjcCore.Rect, applyElement: boolean): void;
     _performBind(): void;
     _getDesiredLegendSize(engine: IRenderEngine, isVertical: boolean, width: number, height: number): wjcCore.Size;
     _renderLegend(engine: IRenderEngine, pt: wjcCore.Point, areas: any[], isVertical: boolean, width: number, height: number): void;
@@ -90,6 +95,7 @@ export declare class FlexChartBase extends wjcCore.Control implements _IPalette 
     _getHitTestLabel(index: number): any;
     _refreshChart(): void;
     _drawTitle(engine: IRenderEngine, rect: wjcCore.Rect, title: string, style: any, isFooter: boolean): wjcCore.Rect;
+    pageToControl(pt: any, y?: number): wjcCore.Point;
     _toControl(pt: any, y?: number): wjcCore.Point;
     _highlightItems(items: any, cls: any, selected: boolean): void;
     _parseMargin(value: any): any;
@@ -157,7 +163,9 @@ export declare class FlexPie extends FlexChartBase {
     _performBind(): void;
     _initData(): void;
     _getBindData(item: any, values: any, labels: any, binding: any, bindingName: any): number;
-    _render(engine: IRenderEngine): void;
+    _render(engine: IRenderEngine, applyElement?: boolean): void;
+    _prepareRender(): void;
+    _renderChart(engine: IRenderEngine, rect: wjcCore.Rect, applyElement: boolean): void;
     _getDesiredLegendSize(engine: IRenderEngine, isVertical: boolean, width: number, height: number): wjcCore.Size;
     _renderLegend(engine: IRenderEngine, pos: wjcCore.Point, areas: any[], isVertical: boolean, width: number, height: number): void;
     _renderData(engine: IRenderEngine, rect: wjcCore.Rect, g: any): void;
@@ -319,7 +327,8 @@ export declare class FlexChartCore extends FlexChartBase {
     _isRotated(): boolean;
     _plotrectId: string;
     _getChartType(): ChartType;
-    _render(engine: IRenderEngine, applyElement?: boolean): void;
+    _prepareRender(): void;
+    _renderChart(engine: IRenderEngine, rect: wjcCore.Rect, applyElement: boolean): void;
     _getDesiredLegendSize(engine: IRenderEngine, isVertical: boolean, width: number, height: number): wjcCore.Size;
     _renderLegend(engine: IRenderEngine, pos: wjcCore.Point, areas: any[], isVertical: boolean, width: number, height: number): void;
     private _renderLegendElements(engine, series, pos, p, areas, isVertical, width, height, colRowLen);

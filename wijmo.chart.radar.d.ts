@@ -35,7 +35,7 @@ export declare class FlexRadar extends wjcChart.FlexChartCore {
     _createSeries(): wjcChart.SeriesBase;
     _clearCachedValues(): void;
     _performBind(): void;
-    _render(engine: wjcChart.IRenderEngine, applyElement?: boolean): void;
+    _prepareRender(): void;
 }
 export declare class FlexRadarSeries extends wjcChart.SeriesBase {
     private _finChartType;

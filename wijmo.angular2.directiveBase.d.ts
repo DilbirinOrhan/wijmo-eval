@@ -85,7 +85,7 @@ export declare class WjDirectiveBehavior {
     ngOnInit(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    static instantiateTemplate(parent: HTMLElement, viewContainerRef: ng2.ViewContainerRef, templateRef: ng2.TemplateRef<any>, domRenderer: ng2.Renderer, useTemplateRoot?: boolean): {
+    static instantiateTemplate(parent: HTMLElement, viewContainerRef: ng2.ViewContainerRef, templateRef: ng2.TemplateRef<any>, domRenderer: ng2.Renderer, useTemplateRoot?: boolean, dataContext?: any): {
         viewRef: ng2.EmbeddedViewRef<any>;
         rootElement: Element;
     };

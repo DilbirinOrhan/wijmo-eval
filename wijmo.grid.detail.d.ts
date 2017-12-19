@@ -24,6 +24,7 @@ export declare class FlexGridDetailProvider {
     createDetailCell: Function;
     disposeDetailCell: Function;
     rowHasDetail: Function;
+    getDetailRow(row: any): DetailRow;
     isDetailVisible(row: any): boolean;
     isDetailAvailable(row: any): boolean;
     hideDetail(row?: any): void;

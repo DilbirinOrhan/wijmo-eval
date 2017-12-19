@@ -13,6 +13,10 @@ export declare class _CalcEngine {
     private _idChars;
     private _functionTable;
     private _cacheSize;
+    private _tableRefStart;
+    private _rowIndex;
+    private _columnIndex;
+    private _containsCellRef;
     constructor(owner: FlexSheet);
     unknownFunction: wjcCore.Event;
     onUnknownFunction(funcName: string, params: Array<_Expression>): _Expression;
@@ -38,6 +42,7 @@ export declare class _CalcEngine {
     private _parseUnary();
     private _parseAtom();
     private _getToken();
+    private _getTableToken();
     private _parseDigit();
     private _parseString();
     private _parseDate();
@@ -46,6 +51,9 @@ export declare class _CalcEngine {
     private _parseCellRange(cell);
     private _parseCell(cell);
     private _getParameters();
+    private _getTableReference(table, sheetRef);
+    private _getTableParameter();
+    private _getTableRange(table, tableRefs);
     private _getAggregateResult(aggType, params, sheet?);
     private _getFlexSheetAggregateResult(aggType, params, sheet?);
     private _getItemList(params, sheet?, needParseToNum?, isGetEmptyValue?, isGetHiddenValue?, columnIndex?);
@@ -75,6 +83,7 @@ export declare class _CalcEngine {
     private _checkCache(expression);
     private _ensureNonFunctionExpression(expr, sheet?);
     private _getDefinedName(name, sheetName);
+    private _getTableRelatedSheet(tableName);
 }
 export declare class _Token {
     private _tokenType;
@@ -103,6 +112,7 @@ export declare enum _TokenType {
     GROUP = 5,
     LITERAL = 6,
     IDENTIFIER = 7,
+    SQUAREBRACKETS = 8,
 }
 export declare enum _TokenID {
     GT = 0,
@@ -131,24 +141,24 @@ export declare class _Expression {
     _evaluatedValue: any;
     constructor(arg?: any);
     readonly token: _Token;
-    evaluate(sheet?: Sheet, rowIndex?: number, columnIndex?: number): any;
-    static toString(x: _Expression, sheet?: Sheet): string;
-    static toNumber(x: _Expression, sheet?: Sheet): number;
-    static toBoolean(x: _Expression, sheet?: Sheet): any;
-    static toDate(x: _Expression, sheet?: Sheet): any;
+    evaluate(rowIndex: number, columnIndex: number, sheet?: Sheet): any;
+    static toString(x: _Expression, rowIndex: number, columnIndex: number, sheet?: Sheet): string;
+    static toNumber(x: _Expression, rowIndex: number, columnIndex: number, sheet?: Sheet): number;
+    static toBoolean(x: _Expression, rowIndex: number, columnIndex: number, sheet?: Sheet): any;
+    static toDate(x: _Expression, rowIndex: number, columnIndex: number, sheet?: Sheet): any;
     static _toOADate(val: Date): number;
     static _fromOADate(oADate: number): Date;
 }
 export declare class _UnaryExpression extends _Expression {
     private _expr;
     constructor(arg: any, expr: _Expression);
-    evaluate(sheet?: Sheet): any;
+    evaluate(rowIndex: number, columnIndex: number, sheet?: Sheet): any;
 }
 export declare class _BinaryExpression extends _Expression {
     private _leftExpr;
     private _rightExpr;
     constructor(arg: any, leftExpr: _Expression, rightExpr: _Expression);
-    evaluate(sheet?: Sheet): any;
+    evaluate(rowIndex: number, columnIndex: number, sheet?: Sheet): any;
     private _isDateValue(val);
 }
 export declare class _CellRangeExpression extends _Expression {
@@ -157,12 +167,12 @@ export declare class _CellRangeExpression extends _Expression {
     private _flex;
     private _evalutingRange;
     constructor(cells: wjcGrid.CellRange, sheetRef: string, flex: FlexSheet);
-    evaluate(sheet?: Sheet): any;
+    evaluate(rowIndex: number, columnIndex: number, sheet?: Sheet): any;
     getValues(isGetHiddenValue?: boolean, columnIndex?: number, sheet?: Sheet): any[];
     getValuseWithTwoDimensions(isGetHiddenValue?: boolean, sheet?: Sheet): any[];
     readonly cells: wjcGrid.CellRange;
     readonly sheetRef: string;
-    private _getCellValue(cell, sheet?);
+    private _getCellValue(cell, sheet?, rowIndex?, columnIndex?);
     _getSheet(): Sheet;
 }
 export declare class _FunctionExpression extends _Expression {
@@ -170,7 +180,7 @@ export declare class _FunctionExpression extends _Expression {
     private _params;
     private _needCacheEvaluatedVal;
     constructor(func: _FunctionDefinition, params: Array<_Expression>, needCacheEvaluatedVal?: boolean);
-    evaluate(sheet?: Sheet, rowIndex?: number, columnIndex?: number): any;
+    evaluate(rowIndex: number, columnIndex: number, sheet?: Sheet): any;
 }
 export declare class _UndoAction {
     _owner: FlexSheet;
@@ -187,6 +197,7 @@ export declare class _EditAction extends _UndoAction {
     private _newValues;
     private _isPaste;
     private _mergeAction;
+    private _deletedTables;
     constructor(owner: FlexSheet, selection?: wjcGrid.CellRange);
     readonly isPaste: boolean;
     undo(): void;
@@ -194,6 +205,7 @@ export declare class _EditAction extends _UndoAction {
     saveNewState(): boolean;
     markIsPaste(): void;
     updateForPasting(rng: wjcGrid.CellRange): void;
+    _storeDeletedTables(table: Table): void;
     private _checkActionState();
 }
 export declare class _ColumnResizeAction extends _UndoAction {
@@ -222,6 +234,7 @@ export declare class _ColumnsChangedAction extends _UndoAction {
     private _selection;
     _affectedFormulas: any;
     _affectedDefinedNameVals: any;
+    _deletedTables: Table[];
     constructor(owner: FlexSheet);
     undo(): void;
     redo(): void;
@@ -233,6 +246,7 @@ export declare class _RowsChangedAction extends _UndoAction {
     private _selection;
     _affectedFormulas: any;
     _affectedDefinedNameVals: any;
+    _deletedTables: Table[];
     constructor(owner: FlexSheet);
     undo(): void;
     redo(): void;
@@ -273,6 +287,7 @@ export declare class _MoveCellsAction extends _UndoAction {
     private _dropRange;
     private _isCopyCells;
     private _isDraggingColumns;
+    private _draggingTableColumns;
     _affectedFormulas: any;
     _affectedDefinedNameVals: any;
     constructor(owner: FlexSheet, draggingCells: wjcGrid.CellRange, droppingCells: wjcGrid.CellRange, isCopyCells: boolean);
@@ -295,6 +310,21 @@ export declare class _CutAction extends _UndoAction {
     saveNewState(): boolean;
     updateForPasting(rng: wjcGrid.CellRange): void;
 }
+export declare class _TableSettingAction extends _UndoAction {
+    private _table;
+    private _oldTableSetting;
+    private _newTableSetting;
+    constructor(owner: FlexSheet, table: Table);
+    undo(): void;
+    redo(): void;
+    saveNewState(): boolean;
+}
+export declare class _TableAction extends _UndoAction {
+    private _addedTable;
+    constructor(owner: FlexSheet, table: Table);
+    undo(): void;
+    redo(): void;
+}
 export declare class _FilteringAction extends _UndoAction {
     private _oldFilterDefinition;
     private _newFilterDefinition;
@@ -309,7 +339,9 @@ export declare class _ContextMenu extends wjcCore.Control {
     private _delRows;
     private _insCols;
     private _delCols;
+    private _convertTable;
     private _idx;
+    private _isDisableDelRow;
     static controlTemplate: string;
     constructor(element: any, owner: FlexSheet);
     readonly visible: boolean;
@@ -322,6 +354,8 @@ export declare class _ContextMenu extends wjcCore.Control {
     handleContextMenu(): void;
     private _init();
     private _removeSelectedState(menuItems);
+    private _showTableOperation();
+    private _addTable();
 }
 export declare class _TabHolder extends wjcCore.Control {
     private _owner;
@@ -388,6 +422,8 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     _cutData: string;
     private _cutValue;
     private _isContextMenuKeyDown;
+    private _tables;
+    _colorThemes: string[];
     _enableMulSel: boolean;
     _isClicking: boolean;
     _isCopying: boolean;
@@ -397,6 +433,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     _lastVisibleFrozenColumn: number;
     _resettingFilter: boolean;
     private _definedNames;
+    private _builtInTableStylesCache;
     _needCopyToSheet: boolean;
     _isPasting: boolean;
     static controlTemplate: string;
@@ -410,6 +447,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     readonly sortManager: SortManager;
     showFilterIcons: boolean;
     readonly definedNames: wjcCore.ObservableArray;
+    readonly tables: wjcCore.ObservableArray;
     selectedSheetChanged: wjcCore.Event;
     onSelectedSheetChanged(e: wjcCore.PropertyChangedEventArgs): void;
     draggingRowColumn: wjcCore.Event;
@@ -467,6 +505,9 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     dispose(): void;
     getClipString(rng?: wjcGrid.CellRange): string;
     setClipString(text: string, rng?: wjcGrid.CellRange): void;
+    getBuiltInTableStyle(styleName: string): TableStyle;
+    addTable(rowIndex: number, colIndex: number, rowSpan: number, colSpan: number, tableName?: string, tableStyle?: TableStyle, options?: ITableOptions, sheet?: Sheet): Table;
+    addTableFromDataSource(rowIndex: number, colIndex: number, dataSource: any[], tableName?: string, tableStyle?: TableStyle, options?: ITableOptions, sheet?: Sheet): Table;
     _getCvIndex(index: number): number;
     private _init();
     private _initFuncsList();
@@ -504,7 +545,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     private _handleDropping(e);
     private _moveCellContent(srcRowIndex, srcColIndex, desRowIndex, desColIndex, isCopyContent);
     private _exchangeCellStyle(isReverse);
-    private _containsMergedCells(rng);
+    _containsMergedCells(rng: wjcGrid.CellRange): boolean;
     private _multiSelectColumns(ht);
     private _cumulativeOffset(element);
     private _cumulativeScrollOffset(element);
@@ -538,14 +579,40 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     _validateSheetName(sheetName: string): boolean;
     _checkExistDefinedName(name: string, sheetName: string, ignoreIndex?: number): boolean;
     private _updateDefinedNameWithSheetRefUpdating(oldSheetName, newSheetName);
-    _updateFormulasWithDefinedNameUpdating(oldName: string, newName: string): void;
+    _updateFormulasWithNameUpdating(oldName: string, newName: string, isTable?: boolean): void;
+    _updateTableNameForSheet(oldName: string, newName: string): void;
     _getDefinedNameIndexByName(name: string): number;
+    private _updateTablesForUpdatingRow(index, count, isDelete?);
+    private _updateTablesForUpdatingColumn(index, count, isDelete?);
+    _isDisableDeleteRow(topRow: number, bottomRow: number): boolean;
     _copy(key: string, value: any): boolean;
+    _getTableSheetIndex(tableName: string): number;
     private _sheetSortConverter(sd, item, value, init);
     private _formatEvaluatedResult(result, col, format);
     private _updateCellRef(cellData, sheetIndex, index, count, isAdding, isRow);
     private _copyRowsToSelectedSheet();
-    private _copyColumnsToSelectedSheet();
+    _copyColumnsToSelectedSheet(): void;
+    private _parseFromWorkbookTable(table);
+    private _parseFromWorkbookTableStyle(tableStyle);
+    private _parseFromWorkbookTableStyleElement(tableStyleElement);
+    private _parseToWorkbookTable(table);
+    private _parseToWorkbookTableStyle(tableStyle);
+    private _parseToWorkbookTableStyleElement(tableStyleElement, isBandedStyle?);
+    private _isBuiltInStyleName(styleName);
+    _getTable(name: string): Table;
+    _addTable(range: wjcGrid.CellRange, tableName?: string, tableStyle?: TableStyle, columns?: TableColumn[], options?: ITableOptions, sheet?: Sheet): Table;
+    private _isTableColumnRef(cellData, cellRef);
+    private _getUniqueTableName();
+    _getThemeColor(theme: any, tint: any): string;
+    private _createBuiltInTableStyle(styleName);
+    private _generateTableLightStyle1(styleIndex, styleName, isLowerStyle);
+    private _generateTableLightStyle2(styleIndex, styleName);
+    private _generateTableMediumStyle1(styleIndex, styleName);
+    private _generateTableMediumStyle2(styleIndex, styleName);
+    private _generateTableMediumStyle3(styleIndex, styleName);
+    private _generateTableMediumStyle4(styleIndex, styleName);
+    private _generateTableDarkStyle1(styleIndex, styleName);
+    private _generateTableDarkStyle2(styleIndex, styleName);
 }
 export declare class DraggingRowColumnEventArgs extends wjcCore.EventArgs {
     private _isDraggingRows;
@@ -601,10 +668,22 @@ export interface ICellStyle {
     textDecoration?: string;
     textAlign?: string;
     verticalAlign?: string;
-    backgroundColor?: string;
-    color?: string;
+    backgroundColor?: any;
+    color?: any;
     format?: string;
     whiteSpace?: string;
+    borderLeftColor?: any;
+    borderLeftStyle?: string;
+    borderLeftWidth?: string;
+    borderRightColor?: any;
+    borderRightStyle?: string;
+    borderRightWidth?: string;
+    borderTopColor?: any;
+    borderTopStyle?: string;
+    borderTopWidth?: string;
+    borderBottomColor?: any;
+    borderBottomStyle?: string;
+    borderBottomWidth?: string;
 }
 export interface IFormatState {
     isBold?: boolean;
@@ -612,6 +691,14 @@ export interface IFormatState {
     isUnderline?: boolean;
     textAlign?: string;
     isMergedCell?: boolean;
+}
+export interface ITableOptions {
+    showHeaderRow?: boolean;
+    showTotalRow?: boolean;
+    showBandedColumns?: boolean;
+    showBandedRows?: boolean;
+    showFirstColumn?: boolean;
+    showLastColumn?: boolean;
 }
 export declare class Sheet {
     private _name;
@@ -630,6 +717,7 @@ export declare class Sheet {
     _scrollPosition: wjcCore.Point;
     _freezeHiddenRowCnt: number;
     _freezeHiddenColumnCnt: number;
+    private _tableNames;
     constructor(owner?: FlexSheet, grid?: wjcGrid.FlexGrid, sheetName?: string, rows?: number, cols?: number);
     readonly grid: wjcGrid.FlexGrid;
     name: string;
@@ -640,11 +728,13 @@ export declare class Sheet {
     itemsSource: any;
     _styledCells: any;
     _mergedRanges: any;
+    readonly tableNames: string[];
     nameChanged: wjcCore.Event;
     onNameChanged(e: wjcCore.PropertyChangedEventArgs): void;
     visibleChanged: wjcCore.Event;
     onVisibleChanged(e: wjcCore.EventArgs): void;
     getCellStyle(rowIndex: number, columnIndex: number): ICellStyle;
+    findTable(rowIndex: number, columnIndex: number): Table;
     _attachOwner(owner: FlexSheet): void;
     _setValidName(validName: string): void;
     _storeRowSettings(): void;
@@ -770,6 +860,113 @@ export declare class UndoStack {
     private _initCellEditActionForPasting();
     private _afterProcessCellEditAction(self);
     private _beforeUndoRedo(action);
+}
+export declare class Table {
+    private _owner;
+    private _name;
+    private _columns;
+    private _range;
+    private _style;
+    private _showHeaderRow;
+    private _showTotalRow;
+    private _showBandedColumns;
+    private _showBandedRows;
+    private _showFirstColumn;
+    private _showLastColumn;
+    constructor(owner: FlexSheet, name: string, range: wjcGrid.CellRange, style?: TableStyle, columns?: TableColumn[], showHeaderRow?: boolean, showTotalRow?: boolean, showBandedColumns?: boolean, showBandedRows?: boolean, showFirstColumn?: boolean, showLastColumn?: boolean);
+    name: string;
+    readonly sheet: Sheet;
+    readonly range: wjcGrid.CellRange;
+    readonly columns: TableColumn[];
+    style: TableStyle;
+    showHeaderRow: boolean;
+    showTotalRow: boolean;
+    showBandedColumns: boolean;
+    showBandedRows: boolean;
+    showFirstColumn: boolean;
+    showLastColumn: boolean;
+    getColumnRange(columnName: string): wjcGrid.CellRange;
+    getDataRange(): wjcGrid.CellRange;
+    getHeaderRange(): wjcGrid.CellRange;
+    getTotalRange(): wjcGrid.CellRange;
+    _addColumn(index: number, columnName?: string): void;
+    _updateCell(rowIndex: number, colIndex: number, cell: HTMLElement): void;
+    _updateTableRange(topRowChange: number, bottomRowChage: number, leftColChange: number, rightColChange: number): void;
+    _setTableRange(range: wjcGrid.CellRange, columns?: TableColumn[]): void;
+    _updateColumnName(columnIndex: number, columnName: string): void;
+    private _generateColumns(showHeaderRow);
+    _getTableCellAppliedStyles(cellRowIndex: number, cellColIndex: number): ITableStyle;
+    private _applyStylesForCell(cellStyle, cell);
+    private _extendStyle(dstStyle, srcStyle, cellRowIndex, cellColIndex, isHeaderCell, isTotalCell);
+    private _cloneThemeColor(dstColor, srcColor);
+    _getStrColor(color: any): string;
+    private _getSubtotalFunction(functionName);
+    private _moveDownTable();
+    private _moveDownCellsBelowTable();
+    private _moveUpCellsBelowTable();
+    private _isOtherTableBelow();
+    private _needMoveDownTable();
+    private _needAddNewRow();
+    private _checkColumnNameExist(name);
+    private _adjustTableRangeWithHeaderRow();
+    private _adjustTableRangeWithTotalRow(isPropChange);
+    private _updateTotalRow();
+    private _getUniqueColumnName(index, columnName?);
+}
+export declare class TableColumn {
+    private _name;
+    private _totalRowLabel;
+    private _totalRowFunction;
+    private _showFilterButton;
+    constructor(name: string, totalRowLabel?: string, totalRowFunction?: string, showFilterButton?: boolean);
+    name: string;
+    totalRowLabel: string;
+    totalRowFunction: string;
+    showFilterButton: boolean;
+}
+export declare class TableStyle {
+    private _name;
+    private _isBuiltIn;
+    private _wholeTableStyle;
+    private _firstBandedColumnStyle;
+    private _secondBandedColumnStyle;
+    private _firstBandedRowStyle;
+    private _secondBandedRowStyle;
+    private _firstColumnStyle;
+    private _lastColumnStyle;
+    private _headerRowStyle;
+    private _totalRowStyle;
+    private _firstHeaderCellStyle;
+    private _lastHeaderCellStyle;
+    private _firstTotalCellStyle;
+    private _lastTotalCellStyle;
+    constructor(name: string, isBuiltIn?: boolean);
+    name: string;
+    wholeTableStyle: ITableStyle;
+    firstBandedColumnStyle: IBandedTableStyle;
+    secondBandedColumnStyle: IBandedTableStyle;
+    firstBandedRowStyle: IBandedTableStyle;
+    secondBandedRowStyle: IBandedTableStyle;
+    firstColumnStyle: ITableStyle;
+    lastColumnStyle: ITableStyle;
+    headerRowStyle: ITableStyle;
+    totalRowStyle: ITableStyle;
+    firstHeaderCellStyle: ITableStyle;
+    lastHeaderCellStyle: ITableStyle;
+    firstTotalCellStyle: ITableStyle;
+    lastTotalCellStyle: ITableStyle;
+    readonly isBuiltIn: boolean;
+}
+export interface ITableStyle extends ICellStyle {
+    borderHorizontalColor?: any;
+    borderHorizontalStyle?: string;
+    borderHorizontalWidth?: string;
+    borderVerticalColor?: any;
+    borderVerticalStyle?: string;
+    borderVerticalWidth?: string;
+}
+export interface IBandedTableStyle extends ITableStyle {
+    size?: number;
 }
 export declare class _FlexSheetValueFilter extends wjcGridFilter.ValueFilter {
     apply(value: any): boolean;

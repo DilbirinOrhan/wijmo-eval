@@ -93,6 +93,7 @@ export declare class WjFlexGridCellTemplate implements ngCore.OnInit, ngCore.OnD
     cellType: CellTemplateType;
     valuePaths: Object;
     autoSizeRows: boolean;
+    forceFullEdit: boolean;
     grid: WjFlexGrid;
     column: WjFlexGridColumn;
     ownerControl: any;
@@ -100,7 +101,7 @@ export declare class WjFlexGridCellTemplate implements ngCore.OnInit, ngCore.OnD
     static _getTemplContextProp(templateType: CellTemplateType): string;
     ngOnInit(): void;
     ngOnDestroy(): void;
-    _instantiateTemplate(parent: HTMLElement): {
+    _instantiateTemplate(parent: HTMLElement, dataContext: any): {
         viewRef: ngCore.EmbeddedViewRef<any>;
         rootElement: Element;
     };

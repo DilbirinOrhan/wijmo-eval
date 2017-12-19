@@ -25,6 +25,7 @@ export declare class Gauge extends wjcCore.Control {
     private _filterID;
     private _rangesDirty;
     private _origin;
+    private _dragging;
     protected _thickness: number;
     protected _initialized: boolean;
     protected _animColor: string;
@@ -70,25 +71,26 @@ export declare class Gauge extends wjcCore.Control {
     refresh(fullUpdate?: boolean): void;
     hitTest(pt: any, y?: number): number;
     static _getBBox(e: any): SVGRect;
-    _getFilterUrl(): string;
-    _getRangeElement(rng: Range): SVGPathElement;
-    _rangeChanged(rng: Range, e: wjcCore.PropertyChangedEventArgs): void;
-    _createElement(tag: string, parent: SVGElement, cls?: string): Element;
-    _centerText(e: SVGTextElement, value: number, center: wjcCore.Point): void;
-    _copy(key: string, value: any): boolean;
-    _getPercent: (value: any) => number;
-    _showElement(e: SVGElement, show: boolean): void;
-    _setAttribute(e: SVGElement, att: string, value: string): void;
-    _updateRange(rng: Range, value?: number): void;
-    _getPointerColor(value: number): string;
-    _keydown(e: KeyboardEvent): void;
-    _getKey(key: number): number;
-    _applyMouseValue(e: any, instant?: boolean): boolean;
-    _updateRangeElement(e: SVGPathElement, rng: Range, value: number): void;
-    _updateText(): void;
-    _updateTicks(): void;
-    _getValueFromPoint(pt: wjcCore.Point): any;
-    _fix(n: any): string;
+    protected _getFilterUrl(): string;
+    protected _getRangeElement(rng: Range): SVGPathElement;
+    protected _rangeChanged(rng: Range, e: wjcCore.PropertyChangedEventArgs): void;
+    protected _createElement(tag: string, parent: SVGElement, cls?: string): Element;
+    protected _centerText(e: SVGTextElement, value: number, center: wjcCore.Point): void;
+    protected _copy(key: string, value: any): boolean;
+    protected _getPercent: (value: any) => number;
+    protected _showElement(e: SVGElement, show: boolean): void;
+    protected _setAttribute(e: SVGElement, att: string, value: string): void;
+    protected _updateRange(rng: Range, value?: number): void;
+    protected _getPointerColor(value: number): string;
+    protected _keydown(e: KeyboardEvent): void;
+    protected _getKey(key: number): number;
+    protected _applyMouseValue(e: any, instant?: boolean): boolean;
+    protected _updateRangeElement(e: SVGPathElement, rng: Range, value: number): void;
+    protected _updateText(): void;
+    protected _updateTicks(): void;
+    protected _getValueFromPoint(pt: wjcCore.Point): any;
+    protected _fix(n: any): string;
+    protected _updateAria(): void;
 }
 export declare enum GaugeDirection {
     Right = 0,

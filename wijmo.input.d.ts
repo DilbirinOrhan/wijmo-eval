@@ -166,6 +166,7 @@ export declare class ListBox extends wjcCore.Control {
     _search: string;
     _toSearch: any;
     _bndDisplay: wjcCore.Binding;
+    _tabIndex: number;
     constructor(element: any, options?: any);
     refresh(): void;
     itemsSource: any;
@@ -217,7 +218,7 @@ export declare class ListBox extends wjcCore.Control {
     _selectPrevPage(): boolean;
     private _findNext();
     private _getCheckbox(index);
-    _populateSelectElement(hostElement: HTMLElement): void;
+    _initFromSelect(hostElement: HTMLElement): void;
 }
 export declare class FormatItemEventArgs extends wjcCore.EventArgs {
     _index: number;
@@ -253,15 +254,18 @@ export declare class ComboBox extends DropDown {
     maxDropDownHeight: number;
     maxDropDownWidth: number;
     getDisplayText(index?: number): string;
-    readonly selectedIndexChanged: wjcCore.Event;
-    onSelectedIndexChanged(e?: wjcCore.EventArgs): void;
     indexOf(text: string, fullMatch: boolean): number;
     readonly listBox: ListBox;
+    readonly itemsSourceChanged: wjcCore.Event;
+    onItemsSourceChanged(e?: wjcCore.EventArgs): void;
+    readonly selectedIndexChanged: wjcCore.Event;
+    onSelectedIndexChanged(e?: wjcCore.EventArgs): void;
     refresh(fullUpdate?: boolean): void;
     onLostFocus(e?: wjcCore.EventArgs): void;
     onIsDroppedDownChanging(e: wjcCore.CancelEventArgs): boolean;
     onIsDroppedDownChanged(e?: wjcCore.EventArgs): void;
     protected _updateBtn(): void;
+    protected _btnclick(e: MouseEvent): void;
     protected _createDropDown(): void;
     protected _dropDownClick(e: MouseEvent): void;
     protected _setText(text: string, fullMatch: boolean): void;
@@ -270,6 +274,7 @@ export declare class ComboBox extends DropDown {
     protected _updateInputSelection(start: number): void;
     private _getSelStart();
     private _getSelEnd();
+    private _setSelRange(start, end);
 }
 export declare class AutoComplete extends ComboBox {
     private _cssMatch;
@@ -412,6 +417,7 @@ export declare class Popup extends wjcCore.Control {
     _modal: boolean;
     _showTrigger: wjcSelf.PopupTrigger;
     _hideTrigger: wjcSelf.PopupTrigger;
+    _hideAnim: any;
     _fadeIn: boolean;
     _fadeOut: boolean;
     _removeOnHide: boolean;
@@ -494,6 +500,7 @@ export declare class InputTime extends ComboBox {
     _step: number;
     _format: string;
     _msk: wjcCore._MaskProvider;
+    _hasCustomItems: boolean;
     constructor(element: any, options?: any);
     readonly inputElement: HTMLInputElement;
     inputType: string;
@@ -506,6 +513,7 @@ export declare class InputTime extends ComboBox {
     mask: string;
     readonly valueChanged: wjcCore.Event;
     onValueChanged(e?: wjcCore.EventArgs): void;
+    onItemsSourceChanged(e?: wjcCore.EventArgs): void;
     protected _updateInputSelection(start: number): void;
     refresh(): void;
     onSelectedIndexChanged(e?: wjcCore.EventArgs): void;
@@ -524,6 +532,7 @@ export declare class InputDateTime extends InputDate {
     timeFormat: string;
     timeStep: number;
     readonly inputTime: InputTime;
+    dispose(): void;
     refresh(): void;
     protected _updateBtn(): void;
     protected _clamp(value: Date): Date;
@@ -544,12 +553,13 @@ export declare class InputNumber extends wjcCore.Control {
     _readOnly: boolean;
     _oldText: string;
     _composing: boolean;
-    _decChar: string;
-    _currChar: string;
-    _fmtSpec: string;
-    _fmtPrec: number;
+    _chrDec: string;
+    _chrCur: string;
+    _fmtSpc: string;
+    _fmtPrc: number;
     _rxSym: RegExp;
     _rxNeg: RegExp;
+    _delKey: boolean;
     static controlTemplate: string;
     constructor(element: any, options?: any);
     readonly inputElement: HTMLInputElement;
@@ -586,6 +596,7 @@ export declare class InputNumber extends wjcCore.Control {
     protected _keydown(e: KeyboardEvent): void;
     protected _input(e: any): void;
     protected _clickSpinner(e: MouseEvent): void;
+    protected _updateAria(): void;
 }
 export declare class InputMask extends wjcCore.Control {
     _tbx: HTMLInputElement;

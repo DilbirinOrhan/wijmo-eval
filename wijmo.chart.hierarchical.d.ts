@@ -67,7 +67,8 @@ export declare class TreeMap extends wjcChart.FlexChartBase {
     private _calculateColorForItems(items, color?, colorConverter?);
     private _getBindData(item, values, binding);
     private _calculateValueAndDepth(arr, depth);
-    _render(engine: wjcChart.IRenderEngine): void;
+    _prepareRender(): void;
+    _renderChart(engine: wjcChart.IRenderEngine, rect: wjcCore.Rect, applyElement: boolean): void;
     private _renderTreeMap(engine, rect, container, items, sum, maxDepth);
     private _resetItemRects(items);
     private _calculateItemRects(rect, items, sum, depth, maxDepth);

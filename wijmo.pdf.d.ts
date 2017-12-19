@@ -125,6 +125,9 @@ export interface IPdfTextDrawSettings extends IPdfTextSettings {
     brush?: any;
     _baseline?: _PdfTextBaseline;
 }
+export interface IPdfTextMeasurementSettings extends IPdfTextSettings {
+    includeLastLineExternalLeading?: boolean;
+}
 export interface IPdfImageDrawSettings {
     width?: number;
     height?: number;
@@ -366,7 +369,7 @@ export declare class PdfPageArea {
     drawImage(url: string, x?: number, y?: number, options?: IPdfImageDrawSettings): PdfPageArea;
     drawSvg(url: string, x?: number, y?: number, options?: IPdfSvgDrawSettings): PdfPageArea;
     lineHeight(font?: PdfFont): number;
-    measureText(text: string, font?: PdfFont, options?: IPdfTextSettings): IPdfTextMeasurementInfo;
+    measureText(text: string, font?: PdfFont, options?: IPdfTextMeasurementSettings): IPdfTextMeasurementInfo;
     moveDown(lines?: number, font?: PdfFont): PdfPageArea;
     moveUp(lines?: number, font?: PdfFont): PdfPageArea;
     scale(xFactor: number, yFactor?: number, origin?: wjcCore.Point): PdfPageArea;

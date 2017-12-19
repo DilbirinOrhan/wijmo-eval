@@ -1,6 +1,6 @@
-﻿/*
+/*
     *
-    * Wijmo Library 5.20172.359
+    * Wijmo Library 5.20173.380
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -10,4 +10,4 @@
     * wijmo.com/products/wijmo-5/license/
     *
     */
-"use strict";var __extends=this&&this.__extends||function(){var n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(n,t){n.__proto__=t}||function(n,t){for(var i in t)t.hasOwnProperty(i)&&(n[i]=t[i])};return function(t,i){function r(){this.constructor=t}n(t,i);t.prototype=i===null?Object.create(i):(r.prototype=i.prototype,new r)}}(),PivotGrid,PivotChart,PivotPanel,Wj;Object.defineProperty(exports,"__esModule",{value:!0});var wjcReactBase=require("wijmo/wijmo.react.base"),wjcOlap=require("wijmo/wijmo.olap"),wjcSelf=require("wijmo/wijmo.react.olap");window.wijmo=window.wijmo||{};window.wijmo.react=window.wijmo.react||{};window.wijmo.react.olap=wjcSelf;PivotGrid=function(n){function t(t){return n.call(this,t,wjcOlap.PivotGrid,{objectProps:['childItemsPath','mergeManager','itemsSource']})||this}return __extends(t,n),t}(wjcReactBase.ComponentBase);exports.PivotGrid=PivotGrid;PivotChart=function(n){function t(t){return n.call(this,t,wjcOlap.PivotChart,{objectProps:['itemsSource']})||this}return __extends(t,n),t}(wjcReactBase.ComponentBase);exports.PivotChart=PivotChart;PivotPanel=function(n){function t(t){return n.call(this,t,wjcOlap.PivotPanel,{objectProps:['engine','itemsSource']})||this}return __extends(t,n),t}(wjcReactBase.ComponentBase);exports.PivotPanel=PivotPanel;Wj=wjcReactBase
+"use strict";var __extends=this&&this.__extends||function(){var t=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var o in e)e.hasOwnProperty(o)&&(t[o]=e[o])};return function(e,o){function r(){this.constructor=e}t(e,o),e.prototype=null===o?Object.create(o):(r.prototype=o.prototype,new r)}}();Object.defineProperty(exports,"__esModule",{value:!0});var wjcReactBase=require("wijmo/wijmo.react.base"),wjcOlap=require("wijmo/wijmo.olap"),wjcSelf=require("wijmo/wijmo.react.olap");window.wijmo=window.wijmo||{},window.wijmo.react=window.wijmo.react||{},window.wijmo.react.olap=wjcSelf;var PivotGrid=function(t){function e(e){return t.call(this,e,wjcOlap.PivotGrid,{objectProps:["childItemsPath","mergeManager","itemsSource"]})||this}return __extends(e,t),e}(wjcReactBase.ComponentBase);exports.PivotGrid=PivotGrid;var PivotChart=function(t){function e(e){return t.call(this,e,wjcOlap.PivotChart,{objectProps:["itemsSource"]})||this}return __extends(e,t),e}(wjcReactBase.ComponentBase);exports.PivotChart=PivotChart;var PivotPanel=function(t){function e(e){return t.call(this,e,wjcOlap.PivotPanel,{objectProps:["engine","itemsSource"]})||this}return __extends(e,t),e}(wjcReactBase.ComponentBase);exports.PivotPanel=PivotPanel;var Wj=wjcReactBase;

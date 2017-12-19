@@ -8,10 +8,10 @@ export declare class FlexGridXlsxConverter {
     private static _saveFlexGridToWorkbook(grid, options?);
     private static _loadToFlexGrid(grid, workbook, options);
     private static _parseFlexGridRowToSheetRow(panel, workbookRow, rowIndex, startColIndex, columnSettings, includeCellStyles, fakeCell, isGroupRow, groupLevel, includeColumns, formatItem?);
-    private static _parseCellStyle(cellStyle);
-    private static _parseBorder(cellStyle);
+    static _parseCellStyle(cellStyle: any, isTableStyle?: boolean): wjcXlsx.IWorkbookStyle;
+    private static _parseBorder(cellStyle, isTableBorder);
     private static _parseEgdeBorder(cellStyle, edge);
-    private static _parseBorderStyle(borderStyle, edge, cellStyle);
+    static _parseBorderStyle(borderStyle: wjcXlsx.BorderStyle, edge: string, cellStyle: any): void;
     private static _parseToExcelFontFamily(fontFamily);
     private static _parseToExcelFormula(formula, isDate);
     private static _getColumnSetting(column, defaultWidth);
@@ -42,6 +42,7 @@ export interface IExtendedSheetInfo {
     styledCells: any;
     mergedRanges: any;
     fonts: string[];
+    tableNames: string[];
 }
 export interface IFlexGridXlsxOptions {
     sheetIndex?: number;

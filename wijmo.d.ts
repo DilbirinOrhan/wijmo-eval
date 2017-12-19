@@ -78,7 +78,7 @@ export declare function hasClass(e: Element, className: string): boolean;
 export declare function removeClass(e: Element, className: string): void;
 export declare function addClass(e: Element, className: string): void;
 export declare function toggleClass(e: Element, className: string, addOrRemove?: boolean): void;
-export declare function setAttribute(e: Element, name: string, value?: any): void;
+export declare function setAttribute(e: Element, name: string, value?: any, keep?: boolean): void;
 export declare function setSelectionRange(e: HTMLInputElement, start: number, end?: number): void;
 export declare function getActiveElement(): HTMLElement;
 export declare function moveFocus(parent: HTMLElement, offset: number): void;
@@ -150,6 +150,7 @@ export declare class Globalize {
     static _CJK: string;
     static getFirstDayOfWeek(): number;
     static getNumberDecimalSeparator(): string;
+    private static _toFixedStr(num, digits);
     private static _unquote(s);
     private static _dateFormatParts;
     private static _parseDateFormat(format);
@@ -382,17 +383,8 @@ export declare class PropertyGroupDescription extends GroupDescription {
     groupNameFromItem(item: any, level: number): any;
     namesMatch(groupName: any, itemName: any): boolean;
 }
-export declare class ArrayBase {
+export declare class ArrayBase extends Array {
     constructor();
-    pop(): any;
-    push(...item: any[]): number;
-    splice(index: number, count: number, value?: any): any[];
-    slice(begin: number, end?: number): any[];
-    indexOf(searchElement: any, fromIndex?: number): number;
-    sort(compareFn?: Function): any[];
-    forEach(callBack: (value: any, index: number, array: any[]) => void, thisArg?: any): void;
-    filter(filterFn: (value: any) => boolean, thisArg?: any): any[];
-    length: number;
 }
 export declare class ObservableArray extends ArrayBase implements INotifyCollectionChanged {
     private _updating;
@@ -402,7 +394,7 @@ export declare class ObservableArray extends ArrayBase implements INotifyCollect
     splice(index: number, count: number, item?: any): any[];
     slice(begin?: number, end?: number): any[];
     indexOf(searchElement: any, fromIndex?: number): number;
-    sort(compareFn?: Function): any[];
+    sort(compareFn?: Function): this;
     insert(index: number, item: any): void;
     remove(item: any): boolean;
     removeAt(index: number): void;
@@ -641,8 +633,8 @@ export declare class Clipboard {
     static paste(callback: Function): void;
     private static _copyPasteInternal(textOrCallback);
 }
-export declare function showPopup(popup: HTMLElement, ref?: any, above?: boolean, fadeIn?: boolean, copyStyles?: boolean): void;
-export declare function hidePopup(popup: HTMLElement, remove?: boolean, fadeOut?: boolean): void;
+export declare function showPopup(popup: HTMLElement, ref?: any, above?: boolean, fadeIn?: boolean, copyStyles?: boolean): any;
+export declare function hidePopup(popup: HTMLElement, remove?: boolean, fadeOut?: boolean): any;
 export declare class PrintDocument {
     _iframe: HTMLIFrameElement;
     _title: string;

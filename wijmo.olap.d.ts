@@ -340,6 +340,8 @@ export declare class PivotEngine {
     private _fieldListChanged(s, e);
     _fieldPropertyChanged(field: PivotField, e: wjcCore.PropertyChangedEventArgs): void;
     _copyProps(dst: any, src: any, props: string[]): void;
+    private _getFieldFromDefinition(fldDef);
+    private _getFieldDefinition(fld);
     private _getFieldCollectionProxy(arr);
     private _setFieldCollectionProxy(arr, proxy);
     private _getFilterProxy(fld);
@@ -510,7 +512,7 @@ export declare class PivotGrid extends wjcGrid.FlexGrid {
     collapseRowsToLevel(level: number): void;
     collapseColumnsToLevel(level: number): void;
     refresh(fullUpdate?: boolean): void;
-    _getCollectionView(value: any): wjcCore.ICollectionView;
+    protected _getCollectionView(value: any): wjcCore.ICollectionView;
     onItemsSourceChanged(e?: wjcCore.EventArgs): void;
     onResizedColumn(e: wjcGrid.CellRangeEventArgs): void;
     _updatedView(): void;

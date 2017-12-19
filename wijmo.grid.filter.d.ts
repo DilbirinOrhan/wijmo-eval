@@ -149,6 +149,7 @@ export declare class ColumnFilterEditor extends wjcCore.Control {
     private _divEdtVal;
     private _divEdtCnd;
     private _btnApply;
+    private _btnCancel;
     private _btnClear;
     static controlTemplate: string;
     '</div>': any;
