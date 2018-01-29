@@ -830,11 +830,16 @@ export declare class _SvgRenderEngine implements IRenderEngine {
 export declare class Legend {
     _chart: FlexChartBase;
     _position: Position;
+    private _title;
+    private _titleAlign;
+    private _titlePadding;
     private _areas;
     private _sz;
     private _colRowLens;
     constructor(chart: FlexChartBase);
     position: Position;
+    title: string;
+    titleAlign: string;
     _getDesiredSize(engine: IRenderEngine, pos: Position, w: number, h: number): wjcCore.Size;
     _getPosition(w: number, h: number): Position;
     _render(engine: IRenderEngine, pt: wjcCore.Point, pos: Position, w: number, h: number): void;
@@ -867,6 +872,7 @@ export declare class HitTestInfo {
     private __yfmt;
     private _name;
     constructor(chart: FlexChartBase, point: wjcCore.Point, element?: ChartElement);
+    readonly chart: FlexChartBase;
     readonly point: wjcCore.Point;
     readonly series: SeriesBase;
     readonly pointIndex: number;
@@ -882,6 +888,8 @@ export declare class HitTestInfo {
     _setData(series: SeriesBase, pi?: number): void;
     _setDataPoint(dataPoint: _DataPoint): void;
     private _getValue(index, formatted);
+    private readonly ax;
+    private readonly ay;
 }
 export declare class Palettes {
     static standard: string[];
@@ -1177,6 +1185,7 @@ export declare class _BarPlotter extends _BasePlotter implements _IPlotter {
     load(): void;
     unload(): void;
     adjustLimits(dataInfo: _DataInfo, plotRect: wjcCore.Rect): wjcCore.Rect;
+    private _isRange(series);
     plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number, customRender?: Function): void;
     private drawSymbol(engine, rect, series, pointIndex, point);
     private drawDefaultSymbol(engine, rect, series);

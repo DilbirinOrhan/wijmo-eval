@@ -51,6 +51,7 @@ export declare function isUndefined(value: any): boolean;
 export declare function isDate(value: any): boolean;
 export declare function isArray(value: any): boolean;
 export declare function isObject(value: any): boolean;
+export declare function isEmpty(obj: any): boolean;
 export declare function getUniqueId(baseId: string): string;
 export declare function mouseToPage(e: any): Point;
 export declare function getType(value: any): DataType;
@@ -80,6 +81,7 @@ export declare function addClass(e: Element, className: string): void;
 export declare function toggleClass(e: Element, className: string, addOrRemove?: boolean): void;
 export declare function setAttribute(e: Element, name: string, value?: any, keep?: boolean): void;
 export declare function setSelectionRange(e: HTMLInputElement, start: number, end?: number): void;
+export declare function removeChild(e: Node): Node;
 export declare function getActiveElement(): HTMLElement;
 export declare function moveFocus(parent: HTMLElement, offset: number): void;
 export declare function getElement(selector: any): HTMLElement;
@@ -181,6 +183,7 @@ export declare class Event {
     removeAllHandlers(): void;
     raise(sender: any, args?: wjcSelf.EventArgs): void;
     readonly hasHandlers: boolean;
+    readonly handlerCount: number;
 }
 export declare class EventArgs {
     static empty: wjcSelf.EventArgs;
@@ -208,17 +211,22 @@ export declare class Control {
     protected static _wme: HTMLElement;
     static _touching: boolean;
     static _REFRESH_INTERVAL: number;
+    static _FOCUS_INTERVAL: number;
     static _ANIM_DEF_DURATION: number;
     static _ANIM_DEF_STEP: number;
+    static _CLICK_DELAY: number;
+    static _CLICK_REPEAT: number;
+    static _CLIPBOARD_DELAY: number;
     static _CTRL_KEY: string;
     static _OWNR_KEY: string;
     static _SCRL_KEY: string;
     static _rxInputAtts: RegExp;
     protected _e: HTMLElement;
     protected _orgOuter: string;
-    protected _orgInner: string;
-    protected _listeners: any;
     protected _orgTag: string;
+    protected _orgAtts: NamedNodeMap;
+    protected _pristine: boolean;
+    protected _listeners: any;
     protected _focus: boolean;
     protected _updating: number;
     protected _fullUpdate: boolean;
@@ -252,6 +260,10 @@ export declare class Control {
     onGotFocus(e?: EventArgs): void;
     readonly lostFocus: wjcSelf.Event;
     onLostFocus(e?: EventArgs): void;
+    readonly refreshing: wjcSelf.Event;
+    onRefreshing(e?: EventArgs): void;
+    readonly refreshed: wjcSelf.Event;
+    onRefreshed(e?: EventArgs): void;
     _hasPendingUpdates(): boolean;
     private static _updateWme();
     protected _handleResize(): void;
@@ -261,6 +273,7 @@ export declare class Control {
     protected _handleTouchEnd(e: any): void;
     private _handleDisabled(e);
     private _replaceWithDiv(element);
+    private _copyAttributes(e, atts, names);
 }
 export declare enum Aggregate {
     None = 0,
@@ -461,7 +474,8 @@ export declare class CollectionView implements IEditableCollectionView, IPagedCo
     getError: Function;
     readonly collectionChanged: wjcSelf.Event;
     onCollectionChanged(e?: wjcSelf.NotifyCollectionChangedEventArgs): void;
-    private _raiseCollectionChanged(action?, item?, index?);
+    protected _raiseCollectionChanged(action?: wjcSelf.NotifyCollectionChangedAction, item?: any, index?: number): void;
+    protected _notifyItemChanged(item: any): void;
     readonly sourceCollectionChanging: wjcSelf.Event;
     onSourceCollectionChanging(e: CancelEventArgs): boolean;
     readonly sourceCollectionChanged: wjcSelf.Event;
@@ -631,10 +645,10 @@ export declare class Color {
 export declare class Clipboard {
     static copy(text: string): void;
     static paste(callback: Function): void;
-    private static _copyPasteInternal(textOrCallback);
+    private static _copyPaste(copyText, pasteCallback);
 }
 export declare function showPopup(popup: HTMLElement, ref?: any, above?: boolean, fadeIn?: boolean, copyStyles?: boolean): any;
-export declare function hidePopup(popup: HTMLElement, remove?: boolean, fadeOut?: boolean): any;
+export declare function hidePopup(popup: HTMLElement, remove?: any, fadeOut?: boolean): any;
 export declare class PrintDocument {
     _iframe: HTMLIFrameElement;
     _title: string;
@@ -661,6 +675,7 @@ export declare class _MaskProvider {
     _backSpace: boolean;
     _composing: boolean;
     _full: boolean;
+    _matchEnd: number;
     _autoComplete: string;
     _spellCheck: boolean;
     _hbInput: any;
@@ -668,6 +683,7 @@ export declare class _MaskProvider {
     _hbKeyPress: any;
     _hbCompositionStart: any;
     _hbCompositionEnd: any;
+    _evtInput: any;
     static _X_DBCS_BIG_HIRA: string;
     static _X_DBCS_BIG_KATA: string;
     static _X_SBCS_BIG_KATA: string;
@@ -679,14 +695,14 @@ export declare class _MaskProvider {
     getMaskRange(): number[];
     getRawValue(): string;
     refresh(): void;
-    _input(): void;
+    _input(e: any): void;
     _keydown(e: KeyboardEvent): void;
     _keypress(e: KeyboardEvent): void;
     _compositionstart(e: KeyboardEvent): void;
     _compositionend(e: KeyboardEvent): void;
     _preventKey(charCode: number): boolean;
     _connect(connect: boolean): void;
-    _valueChanged(): void;
+    _valueChanged(): boolean;
     _applyMask(): string;
     _handleVagueLiterals(text: string): string;
     _isCharValid(mask: string, c: string): boolean;
@@ -699,6 +715,25 @@ export declare class _MaskElement {
     literal: string;
     vague: boolean;
     constructor(wildcardOrLiteral: string, charCase?: string);
+}
+export declare class _ClickRepeater {
+    private static _stopEvents;
+    private _e;
+    private _disabled;
+    private _isDown;
+    private _toDelay;
+    private _toRepeat;
+    private _mousedownBnd;
+    private _mouseupBnd;
+    private _onClickBnd;
+    constructor(element: HTMLElement);
+    element: HTMLElement;
+    disabled: boolean;
+    _connect(connect: boolean): void;
+    _clearTimeouts(): void;
+    _mousedown(e: MouseEvent): void;
+    _mouseup(e: MouseEvent): void;
+    _onClick(): void;
 }
 export declare function isMobile(): boolean;
 export declare function isFirefox(): boolean;

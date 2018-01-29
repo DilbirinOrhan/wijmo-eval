@@ -446,8 +446,10 @@ export declare class _XhrHelper {
 }
 export declare class PdfDocumentEndedEventArgs extends wjcCore.EventArgs {
     private _blob;
-    constructor(blob: Blob);
+    private _chunks;
+    constructor(chunks: Uint8Array[]);
     readonly blob: Blob;
+    readonly chunks: Uint8Array[];
 }
 export declare class PdfDocument extends PdfPageArea {
     private _doc;

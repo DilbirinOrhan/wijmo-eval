@@ -9,6 +9,7 @@ export declare class GroupPanel extends wjcCore.Control {
     _dragMarker: HTMLElement;
     _divMarkers: HTMLElement;
     _divPH: HTMLElement;
+    _hiddenCols: any[];
     static controlTemplate: string;
     constructor(element: any, options?: any);
     hideGroupedColumns: boolean;
@@ -22,6 +23,7 @@ export declare class GroupPanel extends wjcCore.Control {
     _getIndex(e: MouseEvent): number;
     _getElementIndex(e: HTMLElement): number;
     _draggingColumn(s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs): void;
+    _itemsSourceChanging(s: wjcGrid.FlexGrid, e: wjcCore.EventArgs): void;
     _itemsSourceChanged(s: wjcGrid.FlexGrid, e: wjcCore.EventArgs): void;
     _groupsChanged(s: any, e: wjcCore.EventArgs): void;
     _dragStart(e: any): void;

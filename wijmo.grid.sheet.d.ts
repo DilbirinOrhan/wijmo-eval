@@ -231,7 +231,6 @@ export declare class _RowResizeAction extends _UndoAction {
 export declare class _ColumnsChangedAction extends _UndoAction {
     private _oldValue;
     private _newValue;
-    private _selection;
     _affectedFormulas: any;
     _affectedDefinedNameVals: any;
     _deletedTables: Table[];
@@ -243,7 +242,6 @@ export declare class _ColumnsChangedAction extends _UndoAction {
 export declare class _RowsChangedAction extends _UndoAction {
     private _oldValue;
     private _newValue;
-    private _selection;
     _affectedFormulas: any;
     _affectedDefinedNameVals: any;
     _deletedTables: Table[];
@@ -419,7 +417,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     private _toRefresh;
     _copiedRanges: wjcGrid.CellRange[];
     _copiedSheet: Sheet;
-    _cutData: string;
+    _isCutting: boolean;
     private _cutValue;
     private _isContextMenuKeyDown;
     private _tables;
@@ -436,6 +434,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     private _builtInTableStylesCache;
     _needCopyToSheet: boolean;
     _isPasting: boolean;
+    private _resizing;
     static controlTemplate: string;
     constructor(element: any, options?: any);
     readonly sheets: SheetCollection;
@@ -469,7 +468,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     columnChanged: wjcCore.Event;
     onColumnChanged(e: RowColumnChangedEventArgs): void;
     refresh(fullUpdate?: boolean): void;
-    setCellData(r: number, c: any, value: any, coerce?: boolean): boolean;
+    setCellData(r: number, c: any, value: any, coerce?: boolean, invalidate?: boolean): boolean;
     containsFocus(): boolean;
     addUnboundSheet(sheetName?: string, rows?: number, cols?: number, pos?: number, grid?: wjcGrid.FlexGrid): Sheet;
     addBoundSheet(sheetName: string, source: any, pos?: number, grid?: wjcGrid.FlexGrid): Sheet;
@@ -590,7 +589,7 @@ export declare class FlexSheet extends wjcGrid.FlexGrid {
     private _sheetSortConverter(sd, item, value, init);
     private _formatEvaluatedResult(result, col, format);
     private _updateCellRef(cellData, sheetIndex, index, count, isAdding, isRow);
-    private _copyRowsToSelectedSheet();
+    _copyRowsToSelectedSheet(): void;
     _copyColumnsToSelectedSheet(): void;
     private _parseFromWorkbookTable(table);
     private _parseFromWorkbookTableStyle(tableStyle);
@@ -643,7 +642,7 @@ export declare class FlexSheetPanel extends wjcGrid.GridPanel {
     constructor(grid: wjcGrid.FlexGrid, cellType: wjcGrid.CellType, rows: wjcGrid.RowCollection, cols: wjcGrid.ColumnCollection, element: HTMLElement);
     getSelectedState(r: number, c: number, rng: wjcGrid.CellRange): wjcGrid.SelectedState;
     getCellData(r: number, c: any, formatted: boolean): any;
-    setCellData(r: number, c: any, value: any, coerce?: boolean): boolean;
+    setCellData(r: number, c: any, value: any, coerce?: boolean, invalidate?: boolean): boolean;
     _renderCell(row: HTMLElement, r: number, c: number, vrng: wjcGrid.CellRange, state: boolean, ctr: number): number;
 }
 export declare class HeaderRow extends wjcGrid.Row {
@@ -824,6 +823,7 @@ export declare class SortManager {
     checkSortItemExists(columnIndex: any): number;
     commitSort(undoable?: boolean): void;
     cancelSort(): void;
+    clearSort(): void;
     _refresh(): void;
     private _getColumnIndex(property);
     private _getSortItem(columnIndex);
@@ -973,6 +973,7 @@ export declare class _FlexSheetValueFilter extends wjcGridFilter.ValueFilter {
 }
 export declare class _FlexSheetValueFilterEditor extends wjcGridFilter.ValueFilterEditor {
     updateEditor(): void;
+    updateFilter(): void;
 }
 export declare class _FlexSheetConditionFilter extends wjcGridFilter.ConditionFilter {
     apply(value: any): boolean;

@@ -123,6 +123,7 @@ export declare class RadialGauge extends Gauge {
     startAngle: number;
     sweepAngle: number;
     autoScale: boolean;
+    readonly clientSize: wjcCore.Size;
     refresh(fullUpdate?: boolean): void;
     _updateRangeElement(e: SVGPathElement, rng: Range, value: number): void;
     _updateText(): void;

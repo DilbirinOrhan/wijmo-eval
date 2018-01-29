@@ -44,6 +44,7 @@ export declare class FlexGrid extends wjcCore.Control {
     _rcBounds: wjcCore.Rect;
     _ptScrl: wjcCore.Point;
     _cellPadding: number;
+    _clipToScreen: boolean;
     _mouseHdl: _MouseHandler;
     _edtHdl: _EditHandler;
     _selHdl: _SelectionHandler;
@@ -89,9 +90,9 @@ export declare class FlexGrid extends wjcCore.Control {
     private _deferResizing;
     private _bndSortConverter;
     private _bndScroll;
-    private _afScrl;
     private _stickyHdr;
-    private _toSticky;
+    private _afScrl;
+    private _afSticky;
     private _pSel;
     private _pOutline;
     private _vt;
@@ -106,7 +107,6 @@ export declare class FlexGrid extends wjcCore.Control {
     preserveSelectedState: boolean;
     preserveOutlineState: boolean;
     virtualizationThreshold: number;
-    _virtualizationThreshold: number;
     autoGenerateColumns: boolean;
     autoClipboard: boolean;
     columnLayout: string;
@@ -180,7 +180,7 @@ export declare class FlexGrid extends wjcCore.Control {
     getSelectedState(r: number, c: number): SelectedState;
     selectedRows: any[];
     selectedItems: any[];
-    scrollIntoView(r: number, c: number): boolean;
+    scrollIntoView(r: number, c: number, refresh?: boolean): boolean;
     isRangeValid(rng: CellRange): boolean;
     startEditing(fullEdit?: boolean, r?: number, c?: number, focus?: boolean): boolean;
     finishEditing(cancel?: boolean): boolean;
@@ -192,6 +192,8 @@ export declare class FlexGrid extends wjcCore.Control {
     keyActionEnter: KeyAction;
     showDropDown: boolean;
     toggleDropDownList(): void;
+    readonly itemsSourceChanging: wjcCore.Event;
+    onItemsSourceChanging(e: wjcCore.CancelEventArgs): boolean;
     readonly itemsSourceChanged: wjcCore.Event;
     onItemsSourceChanged(e?: wjcCore.EventArgs): void;
     readonly scrollPositionChanged: wjcCore.Event;
@@ -289,8 +291,9 @@ export declare class FlexGrid extends wjcCore.Control {
     _getError(p: GridPanel, r: number, c: number): string;
     private _setAria(name, value);
     private _setFocus(force);
-    _setFocusNoScroll(cell: HTMLElement): void;
+    _setFocusNoScroll(e: HTMLElement): void;
     private _getDefaultRowHeight();
+    private _getDefaultCellPadding();
     protected _getCollectionView(value: any): wjcCore.ICollectionView;
     private _getCanvasContext();
     private _getWidestRow(p, rowRange, col, ctx);
@@ -301,14 +304,15 @@ export declare class FlexGrid extends wjcCore.Control {
     private _sortConverter(sd, item, value, init);
     protected _bindGrid(full: boolean): void;
     _cvCollectionChanged(sender: any, e: wjcCore.NotifyCollectionChangedEventArgs): void;
-    private _cvCurrentChanged(sender, e);
+    private _cvCurrentChanged(s, e);
+    private _syncSelection(force);
     private _getRowIndex(index);
     _getCvIndex(index: number): number;
     private _findRow(data);
     private _updateLayout();
     private _updateStickyHeaders();
     private _updateScrollHandler();
-    _clipToScreen(): boolean;
+    _getClipToScreen(): boolean;
     private _scroll(e);
     private _updateScrollPosition();
     private _updateContent(recycle, state?);
@@ -351,7 +355,9 @@ export declare class FormatItemEventArgs extends CellRangeEventArgs {
 }
 export declare class CellEditEndingEventArgs extends CellRangeEventArgs {
     _stayInEditMode: boolean;
+    _refresh: boolean;
     stayInEditMode: boolean;
+    refresh: boolean;
 }
 export declare enum CellType {
     None = 0,
@@ -390,6 +396,7 @@ export declare class GridPanel {
     readonly hostElement: HTMLElement;
     _getOffsetY(): number;
     _updateContent(recycle: boolean, state: boolean, offsetY: number): HTMLElement;
+    _updateScrollPosition(): void;
     _clearCells(): void;
     _reorderCells(rngNew: CellRange, rngOld: CellRange): void;
     _createRange(start: number, end: number): Range;

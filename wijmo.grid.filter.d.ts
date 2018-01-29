@@ -200,7 +200,7 @@ export declare class FlexGridFilter {
     readonly filterApplied: wjcCore.Event;
     onFilterApplied(e?: wjcCore.EventArgs): void;
     readonly filterChanging: wjcCore.Event;
-    onFilterChanging(e: wjcGrid.CellRangeEventArgs): void;
+    onFilterChanging(e: wjcGrid.CellRangeEventArgs): boolean;
     readonly filterChanged: wjcCore.Event;
     onFilterChanged(e: wjcGrid.CellRangeEventArgs): void;
     _asColumn(col: any): wjcGrid.Column;

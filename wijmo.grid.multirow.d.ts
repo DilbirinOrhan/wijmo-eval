@@ -44,6 +44,7 @@ export declare class MultiRow extends wjcGrid.FlexGrid {
     _cellGroupsByColumn: any;
     _centerVert: boolean;
     _collapsedHeaders: boolean;
+    _collapsedHeadersWasNull: boolean;
     _btnCollapse: HTMLElement;
     constructor(element: any, options?: any);
     layoutDefinition: any[];
@@ -53,6 +54,10 @@ export declare class MultiRow extends wjcGrid.FlexGrid {
     centerHeadersVertically: boolean;
     collapsedHeaders: boolean;
     showHeaderCollapseButton: boolean;
+    readonly collapsedHeadersChanging: wjcCore.Event;
+    onCollapsedHeadersChanging(e: wjcCore.CancelEventArgs): boolean;
+    readonly collapsedHeadersChanged: wjcCore.Event;
+    onCollapsedHeadersChanged(e?: wjcCore.EventArgs): void;
     _addBoundRow(items: any[], index: number): void;
     _addNode(items: any[], index: number, level: number): void;
     _bindColumns(): void;

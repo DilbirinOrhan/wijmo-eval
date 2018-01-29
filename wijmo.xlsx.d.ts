@@ -1,3 +1,4 @@
+export declare function useJSZip(jszip: any): void;
 export declare class _xlsx {
     private static _alphabet;
     private static _indexedColors;
@@ -39,10 +40,14 @@ export declare class _xlsx {
     private static _getSheet(sheet, index, result);
     private static _getTable(table);
     private static _getTableColumn(column);
-    private static _getSheetRelatedTable(rels, rId, tables);
+    private static _getSheetRelatedTable(rel, tables);
+    private static _getSheetRelatedHyperlink(rel, id, sheet);
     private static _getTableStyles(styleDefs, dxfs);
     private static _getTableStyleElement(dxf);
     private static _getTableStyleByName(styleName);
+    private static _getHyperlink(sheet, hyperlinkPart);
+    private static _getTextRunFont(item);
+    private static _getTextOfTextRuns(textRuns);
     private static _isBuiltInStyleName(styleName);
     private static _generateRelsDoc();
     private static _generateThemeDoc();
@@ -68,9 +73,11 @@ export declare class _xlsx {
     private static _generateWorkbook(file);
     private static _generateWorkSheet(sheetIndex, file, xlWorksheets);
     private static _generateSharedStringsDoc();
+    private static _generatePlainText(val);
     private static _generateTable(tableIndex, table, xlTables);
     private static _generateTableFilterSetting(ref, showTotalRow, columns);
-    private static _generateSheetRel(tables, tableNames);
+    private static _generateHyperlinkRel(externalLinks);
+    private static _generateTableRel(tables, tableNames, startIndex);
     private static _getDxfs();
     private static _generateDxfs();
     private static _generateTableStyles();
@@ -237,9 +244,13 @@ export declare class WorkbookCell implements IWorkbookCell {
     style: WorkbookStyle;
     colSpan: number;
     rowSpan: number;
+    link: string;
+    textRuns: WorkbookTextRun[];
     constructor();
     _serialize(): IWorkbookCell;
     _deserialize(workbookCellOM: IWorkbookCell): void;
+    private _serializeTextRuns();
+    private _deserializeTextRuns(textRunOMs);
     private _checkEmptyWorkbookCell();
 }
 export declare class WorkbookFrozenPane implements IWorkbookFrozenPane {
@@ -373,6 +384,13 @@ export declare class WorkbookTableBorder extends WorkbookBorder implements IWork
     _serialize(): IWorkbookTableBorder;
     _deserialize(workbookBorderOM: IWorkbookTableBorder): void;
 }
+export declare class WorkbookTextRun implements IWorkbookTextRun {
+    font: WorkbookFont;
+    text: string;
+    constructor();
+    _serialize(): IWorkbookTextRun;
+    _deserialize(workbookTextRunOM: IWorkbookTextRun): void;
+}
 export interface IXlsxFileContent {
     base64: string;
     base64Array: Uint8Array;
@@ -409,6 +427,8 @@ export interface IWorkbookCell {
     style?: IWorkbookStyle;
     colSpan?: number;
     rowSpan?: number;
+    link?: string;
+    textRuns?: IWorkbookTextRun[];
 }
 export interface IWorkbookFrozenPane {
     rows: number;
@@ -522,6 +542,10 @@ export interface IWorkbookTableBandedStyle extends IWorkbookTableCommonStyle {
 export interface IWorkbookTableBorder extends IWorkbookBorder {
     vertical?: IWorkbookBorderSetting;
     horizontal?: IWorkbookBorderSetting;
+}
+export interface IWorkbookTextRun {
+    font?: IWorkbookFont;
+    text: string;
 }
 export declare enum HAlign {
     General = 0,

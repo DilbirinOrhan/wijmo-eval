@@ -1,6 +1,7 @@
 import * as wjcCore from 'wijmo/wijmo';
 import * as wjcInput from 'wijmo/wijmo.input';
 import * as wjcSelf from 'wijmo/wijmo.viewer';
+export declare function isIOS(): boolean;
 export declare var icons: {
     paginated: string;
     print: string;
@@ -90,8 +91,6 @@ export declare class _DocumentSource {
     private _expiredDateTime;
     private _executionDateTime;
     private _initialPosition;
-    private static _isMobileEnvironment;
-    private static _isIOSEnvironment;
     pageCountChanged: wjcCore.Event;
     disposed: wjcCore.Event;
     pageSettingsChanged: wjcCore.Event;
@@ -105,8 +104,6 @@ export declare class _DocumentSource {
     _getIsDisposed(): boolean;
     _checkHasOutlines(data: _IDocumentStatus): boolean;
     _checkIsLoadCompleted(data: _IDocumentStatus): boolean;
-    static _isMobile(): boolean;
-    static _isIOS(): boolean;
     readonly executionDateTime: Date;
     readonly expiredDateTime: Date;
     readonly errors: string[];
@@ -631,8 +628,10 @@ export declare class _SearchManager {
     private _currentIndex;
     private _needUpdate;
     currentChanged: wjcCore.Event;
+    searchStarted: wjcCore.Event;
     searchCompleted: wjcCore.Event;
     private _onCurrentChanged();
+    private _onSearchStarted();
     private _onSearchCompleted();
     text: string;
     matchCase: boolean;

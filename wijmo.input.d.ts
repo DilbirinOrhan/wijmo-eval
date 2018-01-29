@@ -327,6 +327,7 @@ export declare class Menu extends ComboBox {
     hide(): void;
     readonly itemClicked: wjcCore.Event;
     onItemClicked(e?: wjcCore.EventArgs): void;
+    refresh(fullUpdate?: boolean): void;
     onIsDroppedDownChanged(e?: wjcCore.EventArgs): void;
     protected _keydown(e: KeyboardEvent): void;
     protected _dropDownClick(e: MouseEvent): void;
@@ -421,6 +422,8 @@ export declare class Popup extends wjcCore.Control {
     _fadeIn: boolean;
     _fadeOut: boolean;
     _removeOnHide: boolean;
+    _draggable: boolean;
+    _dragged: boolean;
     _click: any;
     _mousedown: any;
     _bkdrop: HTMLDivElement;
@@ -440,6 +443,7 @@ export declare class Popup extends wjcCore.Control {
     fadeOut: boolean;
     removeOnHide: boolean;
     modal: boolean;
+    isDraggable: boolean;
     dialogResult: any;
     dialogResultEnter: any;
     readonly isVisible: boolean;
@@ -456,6 +460,7 @@ export declare class Popup extends wjcCore.Control {
     dispose(): void;
     onLostFocus(e?: wjcCore.EventArgs): void;
     refresh(fullUpdate?: boolean): void;
+    _makeDraggable(draggable: boolean): void;
     protected _handleResize(): void;
     protected _handleClick(e: any): void;
     protected _handleMouseDown(e: any): void;
@@ -560,6 +565,8 @@ export declare class InputNumber extends wjcCore.Control {
     _rxSym: RegExp;
     _rxNeg: RegExp;
     _delKey: boolean;
+    _rptUp: wjcCore._ClickRepeater;
+    _rptDn: wjcCore._ClickRepeater;
     static controlTemplate: string;
     constructor(element: any, options?: any);
     readonly inputElement: HTMLInputElement;
@@ -574,11 +581,13 @@ export declare class InputNumber extends wjcCore.Control {
     text: string;
     placeholder: string;
     showSpinner: boolean;
+    repeatButtons: boolean;
     selectAll(): void;
     readonly textChanged: wjcCore.Event;
     onTextChanged(e?: wjcCore.EventArgs): void;
     readonly valueChanged: wjcCore.Event;
     onValueChanged(e?: wjcCore.EventArgs): void;
+    dispose(): void;
     onGotFocus(e: wjcCore.EventArgs): void;
     onLostFocus(e?: wjcCore.EventArgs): void;
     refresh(fullUpdate?: boolean): void;
@@ -600,6 +609,7 @@ export declare class InputNumber extends wjcCore.Control {
 }
 export declare class InputMask extends wjcCore.Control {
     _tbx: HTMLInputElement;
+    _oldValue: string;
     _msk: wjcCore._MaskProvider;
     static controlTemplate: string;
     constructor(element: any, options?: any);
@@ -614,6 +624,7 @@ export declare class InputMask extends wjcCore.Control {
     selectAll(): void;
     readonly valueChanged: wjcCore.Event;
     onValueChanged(e?: wjcCore.EventArgs): void;
+    dispose(): void;
     refresh(fullUpdate?: boolean): void;
     onGotFocus(e: any): void;
 }

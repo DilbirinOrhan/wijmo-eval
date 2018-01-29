@@ -9,6 +9,7 @@ export declare class ODataCollectionView extends wjcCore.CollectionView {
     _sortOnServer: boolean;
     _pageOnServer: boolean;
     _filterOnServer: boolean;
+    _showDatesAsGmt: boolean;
     _inferDataTypes: boolean;
     _dataTypesInferred: any;
     _filterDef: string;
@@ -25,6 +26,7 @@ export declare class ODataCollectionView extends wjcCore.CollectionView {
     keys: string[];
     dataTypes: any;
     inferDataTypes: boolean;
+    showDatesAsGmt: boolean;
     sortOnServer: boolean;
     pageOnServer: boolean;
     filterOnServer: boolean;
@@ -52,7 +54,7 @@ export declare class ODataCollectionView extends wjcCore.CollectionView {
     _getReadUrl(nextLink?: string): string;
     _getReadParams(nextLink?: string): any;
     _getData(nextLink?: string): void;
-    private _stringifyNumbers(item);
+    private _convertToDbFormat(item);
     private _convertItem(dataTypes, item);
     private _getInferredDataTypes(arr);
     private _getServiceUrl();
