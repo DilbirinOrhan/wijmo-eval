@@ -31,6 +31,12 @@ This repo exists, however, to make it easy to install the Wijmo trial using [npm
 
 You can also use this setup to create apps using Wijmo on sites like [Glitch](https://glitch.com).
 
+## Licensing
+
+Note that the usage of this repository and the Wijmo code contained within is governed by the [GrapeCity EULA](https://www.grapecity.com/en/legal/eula). Especially, you may not obscure or remove the Wijmo watermark that displays when the controls are loaded. View the [LICENSE](LICENSE) file for comprehensive licensing rules.
+
+If you want to use Wijmo in a production environment, purchase a license on the [GrapeCity website](https://www.grapecity.com/en/pricing#wijmo).
+
 ## Wijmo README Content
 
 ```
